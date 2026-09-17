@@ -895,7 +895,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       };
 
-      const handleSendMessage = (textToSend) => {
+      const handleSendMessage = async (textToSend) => {
         const messageText = textToSend || chatInput;
         if (!messageText.trim()) return;
 
@@ -906,10 +906,48 @@
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
 
-        setChatMessages(prev => [...prev, userMsg]);
+        const updatedHistory = [...chatMessages, userMsg];
+        setChatMessages(updatedHistory);
         setChatInput('');
         setIsBotTyping(true);
 
+        try {
+          // Attempt secure backend Gemini API call (Vercel / Netlify / Node proxy)
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: messageText,
+              userName: userName,
+              history: updatedHistory.slice(-6)
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.success && data.text) {
+              const botMsg = {
+                id: `bot-${Date.now()}`,
+                sender: 'bot',
+                text: data.text,
+                type: data.type || 'friendly',
+                action: data.action ? {
+                  label: data.action.label,
+                  href: data.action.href,
+                  onClick: data.action.target ? () => navigate(data.action.target) : undefined
+                } : undefined,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              };
+              setChatMessages(prev => [...prev, botMsg]);
+              setIsBotTyping(false);
+              return;
+            }
+          }
+        } catch (err) {
+          // Gracefully fallback to client-side engine if /api/chat is not available (e.g. static host)
+        }
+
+        // Fast client-side fallback
         setTimeout(() => {
           const botResult = generateAiResponse(messageText, navigate, userName, setUserName);
           const botMsg = {
@@ -922,7 +960,7 @@
           };
           setChatMessages(prev => [...prev, botMsg]);
           setIsBotTyping(false);
-        }, 600);
+        }, 500);
       };
 
       const toggleBagItem = (itemKey) => {
