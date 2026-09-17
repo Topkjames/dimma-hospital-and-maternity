@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>DIMMA Hospital &amp; Maternity | Compassionate Care &amp; Trusted Healthcare in Enugu</title>
+  
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="DIMMA Hospital &amp; Maternity | Compassionate Care &amp; Trusted Healthcare in Enugu" />
+  <meta name="description" content="DIMMA Hospital &amp; Maternity in Trans-Ekulu, Enugu provides compassionate healthcare, specialized antenatal care, safe labor &amp; delivery, and family medicine. God's Channel in Saving Lives." />
+  <meta name="keywords" content="DIMMA Hospital, DIMMA Hospital and Maternity, Hospital in Enugu, Maternity in Enugu, Trans-Ekulu Hospital, Antenatal care Enugu, Healthcare Enugu" />
+  <meta name="author" content="DIMMA Hospital &amp; Maternity" />
+  <meta name="theme-color" id="theme-color-meta" content="#004b9b" />
+  <link rel="icon" type="image/jpeg" href="./public/assets/dimma-logo.jpg" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN with Dark Mode Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#edf6ff',
+              100: '#d7ebff',
+              200: '#b8dcff',
+              300: '#86c5ff',
+              400: '#4da4ff',
+              500: '#2180ff',
+              600: '#005ed9',
+              700: '#004b9b', // Official DIMMA primary blue
+              800: '#003e82',
+              900: '#06346b',
+              950: '#032047',
+            },
+            emergency: {
+              50: '#fef2f2',
+              100: '#fee2e2',
+              500: '#ef4444',
+              600: '#dc2626', // Official DIMMA cross red
+              700: '#b91c1c',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            body: ['Inter', 'system-ui', 'sans-serif']
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(0, 75, 155, 0.08)',
+            'card': '0 10px 30px -4px rgba(0, 75, 155, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.02)',
+            'float': '0 20px 40px -10px rgba(0, 56, 117, 0.22)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- React 18 & Babel Standalone CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    *:focus-visible {
+      outline: 2px solid #004b9b;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col pb-20 md:pb-0">
+  <div id="root" class="flex-grow flex flex-col"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, useRef } = React;
+
+    const siteConfig = {
+      name: "DIMMA HOSPITAL & MATERNITY",
+      shortName: "DIMMA Hospital",
+      tagline: "GOD'S CHANNEL IN SAVING LIVES",
+      cac: "RC: 9203731",
+      phone: "08064689371",
+      phoneTel: "tel:+2348064689371",
+      email: "dimmahospital@gmail.com",
+      emailMailto: "mailto:dimmahospital@gmail.com",
+      address: {
+        street: "11 Wokemba Street",
+        estate: "Federal Housing, Trans-Ekulu",
+        city: "Enugu",
+        state: "Enugu State",
+        country: "Nigeria",
+        full: "11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu, Nigeria"
+      },
+      operatingHours: {
+        general: "Outpatient Clinics: Mon – Sat (Morning to Evening)",
+        emergency: "Emergency & Maternity Care: 24 Hours / 7 Days",
+        visiting: "Visiting Hours: 11:00 AM – 1:00 PM & 4:00 PM – 6:00 PM Daily"
+      }
+    };
+
+    const hospitalServices = [
+      {
+        id: "maternity-services",
+        title: "Maternity Services",
+        shortDesc: "Comprehensive maternal healthcare pathways from pregnancy through labor, delivery, and postpartum recovery.",
+        category: "maternity",
+        highlights: ["Safe Labor & Delivery Suites", "24/7 Obstetric Coverage", "Immediate Newborn Care"],
+        features: [
+          "Attentive 24/7 admission for expectant mothers in labor",
+          "Skilled midwife and consulting obstetrician coverage",
+          "Continuous foetal and maternal monitoring during labor",
+          "Gentle skin-to-skin contact and early breastfeeding support"
+        ]
+      },
+      {
+        id: "antenatal-care",
+        title: "Antenatal Care (ANC)",
+        shortDesc: "Structured prenatal clinics, routine health checks, foetal growth monitoring, and maternal wellness guidance.",
+        category: "maternity",
+        highlights: ["Scheduled Trimester Checkups", "Foetal Heartbeat Telemetry", "Maternal Nutrition Guidance"],
+        features: [
+          "Routine blood pressure, glucose, and urine protein checks",
+          "Tetanus toxoid and malaria prophylaxis for pregnancy",
+          "Dietary and lifestyle counseling tailored for expectant mothers",
+          "Birth preparedness education and early complication prevention"
+        ]
+      },
+      {
+        id: "postnatal-care",
+        title: "Postnatal Care (PNC)",
+        shortDesc: "Post-delivery maternal recovery monitoring, pelvic health, infant wellness evaluations, and lactation counseling.",
+        category: "maternity",
+        highlights: ["Post-Delivery Healing Checks", "Infant Growth Tracking", "Lactation & Nursing Support"],
+        features: [
+          "Comprehensive 6-week postnatal physical evaluation",
+          "Wound care, perineal healing, and vital signs assessment",
+          "Postpartum emotional wellbeing checks and counseling",
+          "Exclusive breastfeeding guidance and newborn weight checks"
+        ]
+      },
+      {
+        id: "general-medical-care",
+        title: "General Medical Care",
+        shortDesc: "Primary healthcare consultations, diagnosis, acute illness management, and chronic disease outpatient care.",
+        category: "general",
+        highlights: ["Primary Physician Consultations", "Hypertension & Diabetes Care", "Acute Illness Treatment"],
+        features: [
+          "Prompt and attentive physician consultations",
+          "Treatment of malaria, typhoid, and acute febrile illnesses",
+          "Chronic disease monitoring with personalized care plans",
+          "Comprehensive physical assessments and health screening"
+        ]
+      },
+      {
+        id: "child-family-healthcare",
+        title: "Child & Family Healthcare",
+        shortDesc: "Pediatric outpatient care, immunization guidance, childhood growth tracking, and holistic family health.",
+        category: "general",
+        highlights: ["Pediatric Consultations", "Immunization Counseling", "Child Growth & Nutrition"],
+        features: [
+          "Child-friendly clinical atmosphere to ease young patients",
+          "Prompt treatment of common childhood infections and fevers",
+          "Routine developmental milestone and growth tracking",
+          "Preventive family wellness counseling and hygiene guidance"
+        ]
+      },
+      {
+        id: "emergency-care",
+        title: "Emergency Care",
+        shortDesc: "Immediate medical stabilization, acute trauma support, oxygen therapy, and rapid clinical triage 24/7.",
+        category: "emergency",
+        highlights: ["Rapid Clinical Triage", "Vital Stabilization & Oxygen", "Direct Emergency Line: 08064689371"],
+        features: [
+          "Immediate triage upon arrival with prioritized clinical attention",
+          "Oxygen support and acute vital signs stabilization",
+          "Emergency IV therapy, hydration, and acute pain relief",
+          "Seamless transition to ward admission or specialized referral"
+        ]
+      },
+      {
+        id: "laboratory-services",
+        title: "Laboratory Services",
+        shortDesc: "Fast and reliable clinical testing, hematology, urinalysis, blood chemistry, and maternal screening panels.",
+        category: "diagnostics",
+        highlights: ["Rapid Test Turnaround", "Antenatal Blood Panels", "Infection & Chemistry Screening"],
+        features: [
+          "Full Blood Count (FBC), PCV, and blood grouping",
+          "Urinalysis, stool microscopy, and rapid malaria diagnostics",
+          "Genotype testing and blood glucose monitoring",
+          "Hepatitis, retroviral, and pregnancy screening tests"
+        ]
+      },
+      {
+        id: "pharmacy-services",
+        title: "Pharmacy Services",
+        shortDesc: "Quality-assured medications, prenatal supplements, pediatric syrups, and pharmacist medication counseling.",
+        category: "diagnostics",
+        highlights: ["100% Genuine Medications", "Maternal Vitamins & Supplements", "Dosage & Usage Counseling"],
+        features: [
+          "Strict quality control and authentic medication sourcing",
+          "Pharmacist counseling on correct dosage and usage adherence",
+          "Essential maternal prenatal vitamins, iron, and folic acid",
+          "Pediatric-formulated syrups and essential antibiotics"
+        ]
+      },
+      {
+        id: "diagnostic-services",
+        title: "Diagnostic Services",
+        shortDesc: "Routine medical diagnostics, vital signs profiling, ultrasound coordination, and health assessments.",
+        category: "diagnostics",
+        highlights: ["Vital Signs Profiling", "Blood Pressure & Sugar Checks", "Ultrasound Coordination"],
+        features: [
+          "Digital blood pressure, pulse, and oxygen saturation profiling",
+          "Random and fasting blood glucose screenings",
+          "Obstetric and pelvic scan scheduling coordination",
+          "Pre-employment and general fitness medical assessments"
+        ]
+      },
+      {
+        id: "preventive-healthcare",
+        title: "Preventive Healthcare",
+        shortDesc: "Routine wellness screenings, health education, cardiovascular checks, and proactive lifestyle guidance.",
+        category: "general",
+        highlights: ["Wellness Screening Packages", "Early Disease Detection", "Nutrition & Lifestyle Coaching"],
+        features: [
+          "Annual and periodic health screening checkups",
+          "Cardiovascular risk factor screening and blood pressure monitoring",
+          "Maternal nutrition and family wellness education",
+          "Community health awareness and preventive lifestyle support"
+        ]
+      },
+      {
+        id: "minor-procedures",
+        title: "Minor Procedures & Wound Care",
+        shortDesc: "Minor surgical interventions, sterile wound dressing, laceration suturing, and abscess incision & drainage.",
+        category: "general",
+        highlights: ["Sterile Minor Theater", "Laceration Suturing", "Aseptic Wound Care"],
+        features: [
+          "Hygienic minor surgical procedures under local anesthesia",
+          "Sterile dressing changes for wounds, ulcers, and minor burns",
+          "Foreign body removal and simple superficial excisions",
+          "Post-procedure observation and wound healing follow-ups"
+        ]
+      },
+      {
+        id: "health-consultation",
+        title: "Health Consultation",
+        shortDesc: "Confidential, one-on-one doctor consultations to review symptoms, diagnostic reports, and treatment plans.",
+        category: "general",
+        highlights: ["Unhurried Doctor Consultations", "Clear Explanations", "Personalized Care Roadmaps"],
+        features: [
+          "Private, respectful consultation environment",
+          "Thorough medical history review and physical examination",
+          "Clear explanations of medical findings without confusing jargon",
+          "Scheduled follow-up reviews to track your recovery"
+        ]
+      }
+    ];
+
+    const medicalTeamPlaceholders = [
+      {
+        id: "doc-1",
+        role: "Medical Director / Chief Consultant",
+        department: "Clinical Leadership & Administration",
+        description: "Oversees overall clinical direction, hospital medical protocols, and patient care excellence at DIMMA Hospital & Maternity.",
+        availability: "By appointment & Daily Clinical Rounds",
+        notice: "[Official profile to be updated with Medical Director's verified name and credentials]"
+      },
+      {
+        id: "doc-2",
+        role: "Consultant Obstetrician & Gynaecologist",
+        department: "Obstetrics & Maternal-Foetal Medicine",
+        description: "Specializes in high-quality antenatal supervision, complicated pregnancy management, safe deliveries, and women's health.",
+        availability: "Maternity Clinic Days & 24/7 On-Call",
+        notice: "[Official profile to be updated with Consultant's verified credentials]"
+      },
+      {
+        id: "doc-3",
+        role: "Consultant / Resident Physician",
+        department: "Internal Medicine & General Practice",
+        description: "Conducts adult clinical consultations, diagnosis of complex symptoms, cardiovascular management, and acute disease treatment.",
+        availability: "Daily Outpatient Clinics",
+        notice: "[Official profile to be updated with Physician's verified credentials]"
+      },
+      {
+        id: "doc-4",
+        role: "Paediatric Healthcare Specialist",
+        department: "Child Health & Neonatology",
+        description: "Focuses on infant healthcare, newborn wellness checks, childhood immunization guidance, and pediatric acute treatment.",
+        availability: "Scheduled Pediatric Clinics & Emergency Call",
+        notice: "[Official profile to be updated with Paediatrician's verified credentials]"
+      },
+      {
+        id: "doc-5",
+        role: "Head of Nursing & Midwifery Services",
+        department: "Nursing & Maternal Care Unit",
+        description: "Directs 24/7 compassionate nursing care, delivery suite assistance, antenatal counseling, and patient recovery support.",
+        availability: "24/7 Nursing Supervision Shift Rotations",
+        notice: "[Official profile to be updated with Matron's verified credentials]"
+      },
+      {
+        id: "doc-6",
+        role: "Chief Pharmacist & Diagnostic Officer",
+        department: "Pharmacy & Laboratory Diagnostics",
+        description: "Ensures genuine pharmaceutical dispensation, medication safety compliance, and timely clinical laboratory test reporting.",
+        availability: "Daily Hospital Operating Hours",
+        notice: "[Official profile to be updated with Officer's verified credentials]"
+      }
+    ];
+
+    const faqList = [
+      {
+        id: "faq-1",
+        category: "general",
+        question: "What healthcare services does DIMMA Hospital & Maternity provide?",
+        answer: "DIMMA Hospital & Maternity provides comprehensive healthcare services in Trans-Ekulu, Enugu. Our core clinical wings include General Medical Consultations, Specialized Maternity and Antenatal Care, Safe Labor and Delivery, Postnatal Recovery, Child and Family Healthcare, 24/7 Emergency Triage, Diagnostic Laboratory Services, and a full In-House Pharmacy Dispensary."
+      },
+      {
+        id: "faq-2",
+        category: "general",
+        question: "Where is the hospital located and how can I find it in Enugu?",
+        answer: "Our hospital is located at 11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu, Nigeria. It is easily accessible from major junctions within Trans-Ekulu and greater Enugu. For driving landmarks or telephone directions, feel free to call our reception at 08064689371."
+      },
+      {
+        id: "faq-3",
+        category: "maternity",
+        question: "How do I register for Antenatal Care (ANC) at DIMMA?",
+        answer: "Expectant mothers can register for Antenatal Care by visiting our outpatient reception during clinic hours or by scheduling an initial consultation online through our website's 'Book Appointment' page. Our team will guide you through your preliminary vitals, baseline screening, and provide your ANC schedule."
+      },
+      {
+        id: "faq-4",
+        category: "maternity",
+        question: "What should I bring for my first antenatal visit?",
+        answer: "Please bring a valid photo ID, any previous medical records or ultrasound scan reports from your current pregnancy, a list of any medications or vitamins you are currently taking, and a notebook for any questions you wish to ask the doctor or midwife."
+      },
+      {
+        id: "faq-5",
+        category: "appointments",
+        question: "Do I need to book an appointment before visiting the hospital?",
+        answer: "While scheduling an appointment in advance helps minimize waiting times and guarantees priority consultation with your doctor, walk-in patients are warmly welcomed for outpatient consultations. All emergency and maternity labor cases receive immediate priority admission 24/7."
+      },
+      {
+        id: "faq-6",
+        category: "emergency",
+        question: "Is emergency and maternity delivery support available at night and on weekends?",
+        answer: "Yes. Our emergency and maternity delivery units operate 24 hours a day, 7 days a week, including weekends and public holidays. Our on-duty clinical and nursing staff are always ready to receive urgent medical and labor cases."
+      },
+      {
+        id: "faq-7",
+        category: "appointments",
+        question: "What payment methods are accepted at the hospital?",
+        answer: "We accept all major Nigerian debit cards (MasterCard, Visa, Verve) via our secure POS terminals, direct bank transfers at the cashier desk, and cash. For corporate or HMO coverage details, please check with our front desk administration."
+      }
+    ];
+
+    const healthArticlesList = [
+      {
+        id: "art-1",
+        slug: "preparing-for-your-first-antenatal-visit",
+        title: "Preparing for Your First Antenatal Visit: A Practical Guide for Expectant Mothers",
+        summary: "Discover what to expect during your initial prenatal appointment and how early antenatal care safeguards both mother and baby.",
+        category: "Maternity & Prenatal",
+        readTime: "4 min read",
+        author: "DIMMA Health Education Team",
+        content: [
+          "Your first antenatal visit is a vital milestone that sets the medical and emotional foundation for a safe, healthy pregnancy.",
+          "During this first appointment, your healthcare team will confirm your estimated due date, record baseline vital signs (blood pressure, weight, pulse), and perform foundational laboratory screenings including Packed Cell Volume (PCV), Blood Grouping, Rhesus factor, and routine urinalysis.",
+          "This consultation is also your dedicated opportunity to discuss any early symptoms such as morning sickness, ask questions about nutrition and folic acid supplementation, and establish an unhurried, reassuring relationship with your midwives and doctors."
+        ],
+        takeaways: [
+          "Early ANC registration (ideally within the first 12 weeks) detects and manages potential risks early.",
+          "Bring prior scan reports, a list of current medications, and your questions.",
+          "Start prenatal folic acid and iron supplements strictly under clinical guidance."
+        ]
+      },
+      {
+        id: "art-2",
+        slug: "healthy-pregnancy-essential-guidance",
+        title: "Healthy Pregnancy: Important Daily Practices Every Mother Should Know",
+        summary: "Essential guidance on balanced maternal nutrition, adequate hydration, safe physical activity, and recognizing healthy foetal development milestones.",
+        category: "Maternal Wellness",
+        readTime: "5 min read",
+        author: "DIMMA Health Education Team",
+        content: [
+          "Maintaining good health throughout the trimesters requires mindful daily habits that nourish both mother and developing child.",
+          "Nutrition plays a central role: ensure your meals incorporate iron-rich foods (green leafy vegetables, lean meat, fish, beans), calcium for bone development, and plenty of clean potable water to maintain healthy blood volume and amniotic fluid levels.",
+          "Gentle daily physical movement such as brisk walking boosts circulation, eases back tension, and prepares stamina for labor. Always consult your midwife before starting any new routine."
+        ],
+        takeaways: [
+          "Eat diverse, nutrient-dense local foods rich in protein, iron, and fiber.",
+          "Drink at least 2.5 to 3 liters of clean water daily to avoid dehydration and urinary tract infections.",
+          "Rest adequately and avoid heavy physical straining or unprescribed medications."
+        ]
+      },
+      {
+        id: "art-3",
+        slug: "newborn-care-basics-for-new-parents",
+        title: "Newborn Care Basics: A Guide for Parents in the First 30 Days",
+        summary: "Practical advice on umbilical cord hygiene, recognizing feeding cues, safe infant sleep positioning, and newborn warmth.",
+        category: "Pediatric & Newborn",
+        readTime: "4 min read",
+        author: "DIMMA Health Education Team",
+        content: [
+          "The first month with your newborn is a period of adjustment. Understanding standard newborn care practices provides peace of mind and keeps baby safe.",
+          "Caring for the umbilical cord stump requires clean, dry care according to modern clinical guidelines. Avoid applying harmful substances like ash, cow dung, or unprescribed ointments. Clean gently with prescribed chlorhexidine or keep clean and dry until it separates naturally.",
+          "Newborns should always be placed on their back on a firm, flat surface for sleep, free from loose blankets, heavy pillows, or plastic toys to ensure open, unobstructed airways."
+        ],
+        takeaways: [
+          "Practice clean, dry cord care and monitor for any redness, foul odor, or discharge.",
+          "Feed on demand; most newborns breastfeed 8 to 12 times in a 24-hour cycle.",
+          "Attend routine immunization and 6-week infant wellness reviews."
+        ]
+      },
+      {
+        id: "art-4",
+        slug: "when-to-seek-immediate-medical-attention-pregnancy",
+        title: "When Should You Seek Immediate Medical Evaluation During Pregnancy?",
+        summary: "Understanding critical red-flag signs during pregnancy that warrant an urgent visit to the hospital emergency or maternity desk.",
+        category: "Emergency & Safety",
+        readTime: "4 min read",
+        author: "DIMMA Health Education Team",
+        content: [
+          "While most pregnancy discomforts are benign, certain symptoms require immediate medical evaluation by an obstetrician or midwife.",
+          "Red-flag indicators include bright red vaginal bleeding, sudden leakage of clear or greenish fluid from the vagina, severe and persistent headache that does not respond to rest, sudden blurring of vision or spots before your eyes, high fever with chills, or severe abdominal pain.",
+          "Additionally, if you notice a significant decrease or sudden absence in your baby's regular movement after 28 weeks, contact our emergency desk (08064689371) immediately."
+        ],
+        takeaways: [
+          "Never ignore vaginal bleeding, fluid leakage, or severe persistent headaches during pregnancy.",
+          "Track your baby's daily kick patterns regularly from the third trimester.",
+          "DIMMA Hospital's emergency and maternity team is available 24/7 for urgent evaluations."
+        ]
+      }
+    ];
+
+    const generateAiResponse = (userPrompt, onNavigate) => {
+      const q = userPrompt.toLowerCase().trim();
+
+      if (
+        q.includes('bleeding') || q.includes('blood') || q.includes('convulsion') || 
+        q.includes('fainted') || q.includes('unconscious') || q.includes('water break') || 
+        q.includes('leaking') || q.includes('severe pain') || q.includes('not kicking') || 
+        q.includes('no movement') || q.includes('emergency') || q.includes('breathing') ||
+        q.includes('chest pain') || q.includes('urgent')
+      ) {
+        return {
+          type: 'emergency',
+          text: `🚨 **URGENT CLINICAL ATTENTION ADVISED**\n\nYour described symptom may require **immediate medical evaluation**. Please do not wait.\n\n• **DIMMA 24/7 Emergency Line**: [08064689371](tel:+2348064689371)\n• **Location**: 11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu.`,
+          action: { label: '📞 Call Emergency: 08064689371', href: 'tel:+2348064689371' }
+        };
+      }
+
+      if (q.includes('book') || q.includes('appointment') || q.includes('schedule') || q.includes('see a doctor')) {
+        return {
+          type: 'info',
+          text: `📅 **Book an In-Person Consultation**\n\nRequest an appointment for Maternity, Antenatal, General Care, or Pediatrics.\n\n• **Phone**: 08064689371\n• Front desk will confirm your scheduled slot.`,
+          action: { label: '📅 Go to Appointment Page', onClick: () => onNavigate('appointment') }
+        };
+      }
+
+      if (q.includes('maternity') || q.includes('antenatal') || q.includes('anc') || q.includes('pregnant') || q.includes('pregnancy') || q.includes('delivery')) {
+        return {
+          type: 'info',
+          text: `🤰 **Maternity & Antenatal Care**\n\n• Early Registration & Baseline Lab Panels\n• 24/7 Delivery Suites & Midwife Coverage\n• Postnatal Healing & Lactation Support`,
+          action: { label: '🤰 Explore Maternity Wing', onClick: () => onNavigate('maternity') }
+        };
+      }
+
+      if (q.includes('where') || q.includes('location') || q.includes('address') || q.includes('directions')) {
+        return {
+          type: 'info',
+          text: `📍 **Hospital Location**\n\n11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu, Nigeria.\nPhone: **08064689371**`,
+          action: { label: '📍 View Contact & Directions', onClick: () => onNavigate('contact') }
+        };
+      }
+
+      return {
+        type: 'general',
+        text: `👋 Hello! I am the **DIMMA Health & Care Assistant**.\n\nDIMMA Hospital & Maternity (*"GOD'S CHANNEL IN SAVING LIVES"*, CAC: RC: 9203731) is located in Trans-Ekulu, Enugu.\n\nHow can I help you today? You can ask about Maternity registration, booking appointments, visiting hours, or emergency assistance (08064689371).`,
+        action: { label: 'Book Appointment', onClick: () => onNavigate('appointment') }
+      };
+    };
+
+    function App() {
+      const [theme, setTheme] = useState(() => {
+        return localStorage.getItem('dimma_theme') || 'light';
+      });
+
+      const [currentPage, setCurrentPage] = useState('home');
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+      const [selectedServiceModal, setSelectedServiceModal] = useState(null);
+      const [selectedArticle, setSelectedArticle] = useState(null);
+
+      const [isChatOpen, setIsChatOpen] = useState(false);
+      const [chatInput, setChatInput] = useState('');
+      const [chatMessages, setChatMessages] = useState([
+        {
+          id: 'welcome',
+          sender: 'bot',
+          text: `Hello and welcome to **DIMMA Hospital & Maternity**! 🏥\n\nI am your AI Healthcare & Hospital Guide. How may I assist you with your health, maternity care, or hospital visit in Enugu today?`,
+          time: 'Just now'
+        }
+      ]);
+      const [isBotTyping, setIsBotTyping] = useState(false);
+      const chatEndRef = useRef(null);
+
+      useEffect(() => {
+        const root = document.documentElement;
+        if (theme === 'dark') {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
+        localStorage.setItem('dimma_theme', theme);
+      }, [theme]);
+
+      const toggleTheme = () => {
+        setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+      };
+
+      useEffect(() => {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      });
+
+      useEffect(() => {
+        if (isChatOpen && chatEndRef.current) {
+          chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, [chatMessages, isBotTyping, isChatOpen]);
+
+      const navigate = (page, extraData) => {
+        setCurrentPage(page);
+        setMobileMenuOpen(false);
+        window.location.hash = `#/${page}`;
+        if (extraData?.article) setSelectedArticle(extraData.article);
+        else if (page !== 'blog') setSelectedArticle(null);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const handleSendMessage = (textToSend) => {
+        const messageText = textToSend || chatInput;
+        if (!messageText.trim()) return;
+
+        const userMsg = {
+          id: `user-${Date.now()}`,
+          sender: 'user',
+          text: messageText,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        setChatMessages(prev => [...prev, userMsg]);
+        setChatInput('');
+        setIsBotTyping(true);
+
+        setTimeout(() => {
+          const botResult = generateAiResponse(messageText, navigate);
+          const botMsg = {
+            id: `bot-${Date.now()}`,
+            sender: 'bot',
+            text: botResult.text,
+            type: botResult.type,
+            action: botResult.action,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          setChatMessages(prev => [...prev, botMsg]);
+          setIsBotTyping(false);
+        }, 600);
+      };
+
+      return (
+        <div className="flex flex-col min-h-screen text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+          <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm border-b border-slate-100 dark:border-slate-800">
+            <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+              <button onClick={() => navigate('home')} className="flex items-center gap-2 font-bold text-brand-900 dark:text-brand-300">
+                <span>🏥 DIMMA HOSPITAL &amp; MATERNITY</span>
+              </button>
+              <div className="flex items-center gap-2">
+                <button onClick={() => navigate('appointment')} className="bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold">Book Visit</button>
+              </div>
+            </div>
+          </header>
+
+          <main className="flex-grow max-w-7xl mx-auto px-4 py-12 text-center space-y-4">
+            <h1 className="text-3xl font-extrabold">DIMMA Hospital &amp; Maternity Portal</h1>
+            <p className="text-slate-600 dark:text-slate-300">Complete responsive healthcare portal with Light/Dark theme and AI Assistant.</p>
+          </main>
+
+          {/* Fixed Floating Controls: Theme & AI Bot */}
+          <div className="fixed bottom-20 right-3.5 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto">
+            <button
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+              className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 text-slate-700 dark:text-amber-300 shadow-float border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+            <button
+              onClick={() => setIsChatOpen(!isChatOpen)}
+              className="h-12 px-4 rounded-2xl bg-brand-700 hover:bg-brand-800 text-white font-bold shadow-float flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+            >
+              <span>AI Health Assistant ✨</span>
+            </button>
+          </div>
+
+          {/* AI Chatbot Popup */}
+          {isChatOpen && (
+            <div className="fixed bottom-24 right-3.5 md:bottom-22 md:right-6 z-50 w-[calc(100vw-1.75rem)] sm:w-[390px] h-[520px] max-h-[82vh] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden animate-fadeIn">
+              <div className="bg-brand-900 p-4 text-white flex items-center justify-between">
+                <span className="font-bold text-sm">DIMMA Health AI</span>
+                <button onClick={() => setIsChatOpen(false)} className="font-bold">✕</button>
+              </div>
+              <div className="flex-grow p-4 overflow-y-auto space-y-3 text-xs bg-slate-50 dark:bg-slate-950">
+                {chatMessages.map(msg => (
+                  <div key={msg.id} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
+                    <div className={`p-3 rounded-xl max-w-[85%] ${msg.sender === 'user' ? 'bg-brand-700 text-white' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'}`}>
+                      {msg.text}
+                      {msg.action && (
+                        <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                          {msg.action.href ? (
+                            <a href={msg.action.href} className="px-3 py-1 bg-emergency-600 text-white font-bold rounded-lg inline-block text-[11px]">{msg.action.label}</a>
+                          ) : (
+                            <button onClick={() => { msg.action.onClick(); setIsChatOpen(false); }} className="px-3 py-1 bg-brand-700 text-white font-bold rounded-lg text-[11px]">{msg.action.label}</button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {isBotTyping && <div className="text-xs text-slate-400">Typing...</div>}
+                <div ref={chatEndRef} />
+              </div>
+              <form onSubmit={e => { e.preventDefault(); handleSendMessage(); }} className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex gap-2">
+                <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Ask health or hospital question..." className="flex-grow text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white" />
+                <button type="submit" className="p-2.5 bg-brand-700 text-white rounded-xl font-bold text-xs">➤</button>
+              </form>
+            </div>
+          )}
+
+          <footer className="bg-slate-900 text-slate-400 py-8 text-center text-xs">
+            © 2026 DIMMA Hospital &amp; Maternity. All rights reserved.
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
