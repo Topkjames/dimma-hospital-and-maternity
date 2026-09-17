@@ -496,102 +496,157 @@
       }
     ];
 
-    // --- AI HEALTH ASSISTANT INTELLIGENCE ENGINE ---
+    // --- HUMAN-LIKE AI HEALTH & CARE ASSISTANT (Sister Ada - DIMMA Care Guide) ---
     const generateAiResponse = (userPrompt, onNavigate) => {
       const q = userPrompt.toLowerCase().trim();
 
-      // Emergency & Red-Flag Triage
+      // 1. Emergency & Urgent Symptoms Triage (Bleeding, severe pain, fainted, water break, no kick, convulsion)
       if (
         q.includes('bleeding') || q.includes('blood') || q.includes('convulsion') || 
         q.includes('fainted') || q.includes('unconscious') || q.includes('water break') || 
         q.includes('leaking') || q.includes('severe pain') || q.includes('not kicking') || 
-        q.includes('no movement') || q.includes('emergency') || q.includes('breathing') ||
-        q.includes('chest pain') || q.includes('urgent')
+        q.includes('no movement') || q.includes('emergency') || q.includes('cannot breathe') ||
+        q.includes('chest pain') || q.includes('urgent') || q.includes('severe headache')
       ) {
         return {
           type: 'emergency',
-          text: `🚨 **URGENT CLINICAL ATTENTION ADVISED**\n\nYour described symptom may require **immediate medical evaluation**. Please do not wait.\n\n• **DIMMA 24/7 Emergency & Maternity Line**: [08064689371](tel:+2348064689371)\n• **Hospital Location**: 11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu.\n\nOur on-duty clinical and obstetric team is available around the clock to assist you immediately.`,
-          action: { label: '📞 Call Emergency: 08064689371', href: 'tel:+2348064689371' }
+          text: `Oh dear, please stay as calm as you can, but we need to act right away! 🚨\n\nBecause you mentioned bleeding, severe pain, or urgent symptoms, you shouldn't wait or try managing this at home. Our medical officers and on-duty midwives are ready to receive you immediately.\n\n📍 **Where to go**: 11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu.\n📞 **Call our 24/7 Emergency Desk**: 08064689371 so our team can prepare for your arrival before you get to the gate.`,
+          action: { label: '📞 Call Emergency Line Now: 08064689371', href: 'tel:+2348064689371' }
         };
       }
 
-      // Appointment Booking
-      if (q.includes('book') || q.includes('appointment') || q.includes('schedule') || q.includes('see a doctor') || q.includes('consult')) {
+      // 2. Warm Greetings ("Hi", "Hello", "Good morning", "Good afternoon", "How are you", "Hey")
+      if (
+        q === 'hi' || q === 'hello' || q.startsWith('hello') || q.startsWith('hi ') || 
+        q.includes('good morning') || q.includes('good afternoon') || q.includes('good evening') || 
+        q.includes('how are you') || q.includes('how far') || q.includes('kedu')
+      ) {
         return {
-          type: 'info',
-          text: `📅 **Book a Consultation at DIMMA Hospital**\n\nYou can easily request an in-person appointment for any of our 12 clinical departments including Maternity, Antenatal, General Practice, and Pediatrics.\n\n• **Direct Phone**: 08064689371\n• **Confirmation**: Front desk will call to confirm your scheduled time slot.`,
-          action: { label: '📅 Go to Appointment Page', onClick: () => onNavigate('appointment') }
+          type: 'friendly',
+          text: `Hello there! It's so lovely to connect with you today. 😊🌸\n\nI am Sister Ada, your virtual care coordinator here at **DIMMA Hospital & Maternity** (*"God's Channel in Saving Lives"*).\n\nHow are you and your family feeling today? Whether you need advice on a symptom you're experiencing, want to register for antenatal care, or would like to book a consultation with our doctors, I'm right here to help you step-by-step.`,
+          action: { label: '📅 Book a Doctor\'s Visit', onClick: () => onNavigate('appointment') }
         };
       }
 
-      // Maternity & Antenatal (ANC)
-      if (q.includes('maternity') || q.includes('antenatal') || q.includes('anc') || q.includes('pregnant') || q.includes('pregnancy') || q.includes('baby delivery') || q.includes('labor') || q.includes('postnatal') || q.includes('pnc')) {
+      // 3. Gratitude & Blessings ("Thank you", "Thanks", "God bless you", "Appreciate", "Alright", "Okay")
+      if (
+        q.includes('thank') || q.includes('bless') || q.includes('dal') || q.includes('appreciate') || 
+        q === 'ok' || q === 'okay' || q === 'alright' || q.includes('bye') || q.includes('good night')
+      ) {
         return {
-          type: 'info',
-          text: `🤰 **Maternity & Antenatal Care at DIMMA**\n\nDIMMA Maternity Wing is our flagship clinical care unit dedicated to safe maternal delivery and infant wellbeing:\n\n• **Early Registration**: Baseline blood profiling (PCV, Genotype, Rhesus), routine ultrasound reviews, and nutrition counseling.\n• **24/7 Delivery Suites**: Attentive midwives and obstetricians on duty for day and night labor.\n• **Postnatal Support**: 6-week mother healing checks, lactation guidance, and newborn immunizations.`,
-          action: { label: '🤰 Explore Maternity Wing', onClick: () => onNavigate('maternity') }
+          type: 'friendly',
+          text: `You are so very welcome, dear! 💙 It is truly our joy to serve you.\n\nMay God keep you and your loved ones in vibrant health and peace. Remember, our hospital doors at 11 Wokemba Street and our emergency line (08064689371) are open 24/7 whenever you need a listening ear or medical care.\n\nHave a blessed and restful day ahead! 🌿`,
+          action: { label: 'Explore Our Services', onClick: () => onNavigate('services') }
         };
       }
 
-      // Hospital Location & Directions
-      if (q.includes('where') || q.includes('location') || q.includes('address') || q.includes('directions') || q.includes('find you') || q.includes('trans-ekulu') || q.includes('enugu')) {
+      // 4. Pregnancy, Maternity & Antenatal (ANC)
+      if (
+        q.includes('maternity') || q.includes('antenatal') || q.includes('anc') || 
+        q.includes('pregnant') || q.includes('pregnancy') || q.includes('baby delivery') || 
+        q.includes('labor') || q.includes('postnatal') || q.includes('pnc') || q.includes('trimester')
+      ) {
         return {
-          type: 'info',
-          text: `📍 **DIMMA Hospital Location**\n\n• **Address**: 11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu, Nigeria.\n• **Landmark**: Easily accessible within Federal Housing Estate, Trans-Ekulu.\n• **Assistance**: Need driving directions? Call our front desk at **08064689371**.`,
-          action: { label: '📍 View Contact & Directions', onClick: () => onNavigate('contact') }
+          type: 'friendly',
+          text: `A hearty congratulations to you on this beautiful journey! 🤰✨\n\nCaring for expectant mothers and welcoming healthy babies is truly the heartbeat of DIMMA Hospital & Maternity. Our midwives and obstetricians are so gentle, attentive, and vigilant:\n\n• **Early Antenatal Registration**: We run foundational blood tests (PCV, Genotype, Rhesus), vital monitoring, and personalized nutritional guidance.\n• **24/7 Delivery Suites**: Round-the-clock skilled delivery support with comfortable, hygienic recovery wards.\n• **Postnatal & Newborn Care**: Healing checks for mother, exclusive breastfeeding support, and newborn growth tracking.\n\nWould you like to schedule your first antenatal consultation with us?`,
+          action: { label: '🤰 Book Antenatal Consultation', onClick: () => onNavigate('appointment', { service: 'Antenatal Care (ANC)' }) }
         };
       }
 
-      // Services & Departments
-      if (q.includes('service') || q.includes('department') || q.includes('lab') || q.includes('pharmacy') || q.includes('test') || q.includes('scan') || q.includes('xray') || q.includes('surgery')) {
+      // 5. Booking an Appointment or Seeing a Doctor
+      if (
+        q.includes('book') || q.includes('appointment') || q.includes('schedule') || 
+        q.includes('see a doctor') || q.includes('consult') || q.includes('register')
+      ) {
         return {
-          type: 'info',
-          text: `🏥 **Our 12 Clinical Departments**\n\n1. Maternity & Delivery Suites\n2. Antenatal Care (ANC)\n3. Postnatal Care (PNC)\n4. General Medical Consultations\n5. Child & Family Healthcare\n6. 24/7 Emergency & Triage\n7. Diagnostic Laboratory\n8. In-House Pharmacy\n9. Diagnostic Telemetry & Vital Checks\n10. Preventive Health Screenings\n11. Minor Procedures & Wound Dressing\n12. Health Consultations`,
-          action: { label: 'Explore All 12 Services', onClick: () => onNavigate('services') }
+          type: 'friendly',
+          text: `I would be delighted to help you get that scheduled! 🩺\n\nBooking a consultation ensures our doctors can give you their undivided, unhurried attention. You can choose any day that fits your schedule, and whether you prefer morning, afternoon, or evening clinic slots.\n\nOnce you submit, our front desk team will give you a friendly confirmation call. Click below to choose your preferred time:`,
+          action: { label: '📅 Open Appointment Booking Form', onClick: () => onNavigate('appointment') }
         };
       }
 
-      // Visiting Hours & Patient Info
-      if (q.includes('visiting') || q.includes('visit') || q.includes('hours') || q.includes('time') || q.includes('what to bring') || q.includes('payment') || q.includes('pos') || q.includes('card') || q.includes('hmo')) {
+      // 6. Hospital Location & Driving Directions
+      if (
+        q.includes('where') || q.includes('location') || q.includes('address') || 
+        q.includes('directions') || q.includes('find you') || q.includes('trans-ekulu') || 
+        q.includes('enugu') || q.includes('map')
+      ) {
         return {
-          type: 'info',
-          text: `🕒 **Visiting Hours & Patient Guidelines**\n\n• **Visiting Hours**: 11:00 AM – 1:00 PM & 4:00 PM – 6:00 PM daily.\n• **Emergency/Maternity**: Open 24 Hours / 7 Days.\n• **What to Bring**: Valid ID, hospital registration card, current medications list, and antenatal folder (for maternity).\n• **Payment Methods**: POS debit cards (MasterCard, Visa, Verve), direct bank transfer, and cash.`,
-          action: { label: 'View Patient Visit Guide', onClick: () => onNavigate('patient-info') }
+          type: 'friendly',
+          text: `We are right here in Trans-Ekulu, Enugu! 📍\n\n• **Our Address**: 11 Wokemba Street, Federal Housing Estate, Trans-Ekulu, Enugu, Nigeria.\n• **Easy Landmarks**: It's well-connected and easy to find within the Federal Housing area.\n\nIf you or your cab driver are on the road and need a quick voice guide, feel free to ring our front desk directly at **08064689371** and we'll direct you straight to our gate!`,
+          action: { label: '📍 View Map & Contact Page', onClick: () => onNavigate('contact') }
         };
       }
 
-      // Medical Team / Doctors
-      if (q.includes('doctor') || q.includes('specialist') || q.includes('gynecologist') || q.includes('pediatrician') || q.includes('midwife') || q.includes('nurse') || q.includes('team')) {
-        return {
-          type: 'info',
-          text: `👨‍⚕️ **DIMMA Medical Team & Specialists**\n\nOur clinical staff includes Medical Directors, Consultant Obstetricians & Gynecologists, Physicians, Paediatric Specialists, Certified Midwives, and Pharmacists.\n\nConsultations are held daily during outpatient clinic hours.`,
-          action: { label: 'View Medical Specialists', onClick: () => onNavigate('doctors') }
-        };
-      }
-
-      // Fever, Headache, Malaria, Illness Symptoms
-      if (q.includes('fever') || q.includes('malaria') || q.includes('typhoid') || q.includes('headache') || q.includes('vomit') || q.includes('cough') || q.includes('stomach') || q.includes('body pain')) {
+      // 7. Common Illness Symptoms (Fever, Headache, Malaria, Stomach pain, Cough, Vomiting)
+      if (
+        q.includes('fever') || q.includes('malaria') || q.includes('typhoid') || 
+        q.includes('headache') || q.includes('vomit') || q.includes('cough') || 
+        q.includes('stomach') || q.includes('body pain') || q.includes('weakness') ||
+        q.includes('dizzy') || q.includes('dizziness') || q.includes('sick') || q.includes('cold')
+      ) {
         return {
           type: 'health',
-          text: `💊 **Health Advice & Clinic Evaluation**\n\nSymptoms like fever, persistent headache, or body weakness can indicate acute infections such as malaria, typhoid, or viral illnesses. Early laboratory screening prevents complications.\n\n• **Recommendations**: Stay well-hydrated and avoid self-medicating with unprescribed drugs.\n• **Action**: Visit our outpatient clinic for quick blood tests (PCV, MP, FBC) and doctor consultation.`,
-          action: { label: '📅 Book Clinic Consultation', onClick: () => onNavigate('appointment') }
+          text: `Oh, I'm so sorry you're feeling unwell! 🥺 Please take things easy right now.\n\nSymptoms like fever, persistent headache, or body weakness are very common, often pointing to malaria, typhoid, or a viral infection. Here is what I recommend for right now:\n\n1. **Hydration**: Drink plenty of clean water or oral rehydration fluids to avoid dehydration.\n2. **Rest**: Avoid strenuous chores or heavy work.\n3. **Do not self-medicate blindly**: Let our doctor take a look and run a quick 15-minute diagnostic test in our laboratory so we prescribe the exact treatment that will bring you relief.\n\nWould you like to come in for a consultation today?`,
+          action: { label: '📅 Book Quick Doctor\'s Consultation', onClick: () => onNavigate('appointment') }
         };
       }
 
-      // Newborn & Baby care
-      if (q.includes('newborn') || q.includes('infant') || q.includes('cord') || q.includes('breastfeed') || q.includes('immuniz') || q.includes('vaccin')) {
+      // 8. Newborn & Pediatric Care
+      if (
+        q.includes('newborn') || q.includes('infant') || q.includes('cord') || 
+        q.includes('breastfeed') || q.includes('immuniz') || q.includes('vaccin') || 
+        q.includes('child') || q.includes('children') || q.includes('baby')
+      ) {
         return {
           type: 'health',
-          text: `👶 **Newborn & Child Healthcare**\n\n• **Umbilical Cord Care**: Keep the stump clean and dry. Avoid applying harmful substances.\n• **Feeding**: Breastfeed on demand (every 2-3 hours).\n• **Immunization**: Ensure your newborn receives standard vaccinations on schedule.\n• **When to visit**: If baby has high fever, refuses feeding, or has rapid breathing, visit DIMMA immediately.`,
-          action: { label: 'Read Newborn Care Articles', onClick: () => onNavigate('blog') }
+          text: `Caring for little ones is so special, but it can also bring questions! 👶🍼\n\nHere are some essential tips our pediatric and midwifery team always shares with parents:\n\n• **Umbilical Cord Care**: Keep the cord stump clean and dry at all times. Never apply charcoal, ash, or unprescribed pastes.\n• **Feeding**: Nurse on demand—newborns typically feed 8 to 12 times a day in the first weeks.\n• **Immunization**: Make sure baby's vaccinations are kept up to date according to national clinical schedules.\n\nIf baby develops a high fever, cough, or refuses feeding, please bring them in for prompt pediatric review!`,
+          action: { label: '👶 Explore Child & Family Healthcare', onClick: () => onNavigate('services') }
         };
       }
 
-      // General Greeting / About
+      // 9. Visiting Hours & Rules
+      if (
+        q.includes('visiting') || q.includes('visit') || q.includes('hours') || 
+        q.includes('time') || q.includes('open') || q.includes('close') || q.includes('sunday')
+      ) {
+        return {
+          type: 'friendly',
+          text: `Here is our visiting schedule! 🕒\n\n• **Morning Visiting Slot**: 11:00 AM – 1:00 PM\n• **Evening Visiting Slot**: 4:00 PM – 6:00 PM\n• **Emergency & Maternity Admissions**: Open **24 Hours / 7 Days a week**, including Sundays and public holidays.\n\nWe structure visiting hours this way so our recuperating patients and new mothers get plenty of peaceful rest to heal. Are you planning to visit someone at the ward today?`,
+          action: { label: 'View Patient Visit Guidelines', onClick: () => onNavigate('patient-info') }
+        };
+      }
+
+      // 10. Billing, Pricing, HMO & Payment Methods
+      if (
+        q.includes('payment') || q.includes('price') || q.includes('cost') || 
+        q.includes('bill') || q.includes('hmo') || q.includes('insurance') || 
+        q.includes('card') || q.includes('pos') || q.includes('transfer') || q.includes('money')
+      ) {
+        return {
+          type: 'friendly',
+          text: `We know that clear, transparent billing gives you peace of mind! 💳\n\n• **Payment Methods Accepted**: You can pay easily using any Nigerian debit card (MasterCard, Visa, Verve) via our POS, through direct bank transfer at our cashier desk, or in cash.\n• **Affordable & Fair Care**: We strive to make quality maternal and general healthcare accessible for Trans-Ekulu and Enugu families.\n• **Pricing Inquiries**: For specific delivery packages or procedure estimates, our front desk team is happy to assist you over the phone at **08064689371**.`,
+          action: { label: 'View Payment Information', onClick: () => onNavigate('patient-info') }
+        };
+      }
+
+      // 11. Medical Team / Doctors & Leadership
+      if (
+        q.includes('doctor') || q.includes('specialist') || q.includes('gynecologist') || 
+        q.includes('pediatrician') || q.includes('midwife') || q.includes('nurse') || q.includes('team')
+      ) {
+        return {
+          type: 'friendly',
+          text: `Our clinical team is dedicated to providing warm, attentive, and highly professional care! 👨‍⚕️👩‍⚕️\n\nWe have experienced Medical Directors, Consultant Obstetricians & Gynecologists, Physicians, Pediatricians, and Certified Midwives holding daily outpatient clinics and supervising 24/7 maternity care.\n\nWould you like to see our medical team and clinical departments?`,
+          action: { label: 'View Medical Team & Departments', onClick: () => onNavigate('doctors') }
+        };
+      }
+
+      // 12. Default Caring Fallback
       return {
-        type: 'general',
-        text: `👋 Hello! I am the **DIMMA Health & Care Assistant**.\n\nDIMMA Hospital & Maternity (*"GOD'S CHANNEL IN SAVING LIVES"*, CAC: RC: 9203731) is located at 11 Wokemba Street, Trans-Ekulu, Enugu.\n\nHow can I help you today? You can ask about:\n• Maternity & Antenatal registration\n• Symptoms & Triage advice\n• Booking a Doctor's Appointment\n• Hospital Services, Location & Visiting Hours\n• Emergency assistance (Phone: 08064689371)`,
-        action: { label: 'Book Appointment', onClick: () => onNavigate('appointment') }
+        type: 'friendly',
+        text: `Thank you for sharing that with me! 🌸\n\nAs your DIMMA care guide, I'm here to ensure you get the exact help you need. DIMMA Hospital & Maternity (*"GOD'S CHANNEL IN SAVING LIVES"*) is located at 11 Wokemba Street, Trans-Ekulu, Enugu.\n\nYou can ask me about:\n• Maternity & Antenatal registration 🤰\n• Advice on any symptoms you're feeling 💊\n• Booking an in-person doctor's appointment 📅\n• Visiting hours, laboratory tests, or emergency help 📞\n\nHow else can I assist you right now, dear?`,
+        action: { label: '📅 Book an Appointment', onClick: () => onNavigate('appointment') }
       };
     };
 
@@ -607,14 +662,14 @@
       const [selectedServiceModal, setSelectedServiceModal] = useState(null);
       const [selectedArticle, setSelectedArticle] = useState(null);
 
-      // AI Chatbot State
+      // AI Chatbot State with Human-like Persona
       const [isChatOpen, setIsChatOpen] = useState(false);
       const [chatInput, setChatInput] = useState('');
       const [chatMessages, setChatMessages] = useState([
         {
           id: 'welcome',
           sender: 'bot',
-          text: `Hello and welcome to **DIMMA Hospital & Maternity**! 🏥\n\nI am your AI Healthcare & Hospital Guide. How may I assist you with your health, maternity care, or hospital visit in Enugu today?`,
+          text: `Hello and a warm welcome to **DIMMA Hospital & Maternity**! 🌸\n\nI'm **Sister Ada**, your virtual care coordinator. How are you and your family feeling today? Please feel free to tell me how I can help you with your health, maternity care, or booking a visit in Enugu.`,
           time: 'Just now'
         }
       ]);
@@ -1846,15 +1901,15 @@
             {/* 2. AI Health & Hospital Assistant Launcher */}
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
-              className="h-12 px-4 rounded-2xl bg-brand-700 hover:bg-brand-800 text-white font-bold shadow-float border border-brand-600 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all group focus:outline-none"
-              aria-label="Open DIMMA Health AI Chat"
+              className="h-12 px-4 rounded-2xl bg-brand-700 hover:bg-brand-800 text-white font-bold shadow-float border border-brand-600 flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-all group focus:outline-none"
+              aria-label="Open DIMMA Health Care Chat"
             >
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <span className="text-xs sm:text-sm font-bold tracking-tight">AI Health Assistant</span>
-              <span className="text-sm">✨</span>
+              <span className="text-xs sm:text-sm font-bold tracking-tight">Sister Ada (Care Guide)</span>
+              <span className="text-base">👩‍⚕️</span>
             </button>
 
           </div>
@@ -1863,25 +1918,26 @@
               INTERACTIVE AI CHATBOT WINDOW (POPUP MODAL)
           ========================================================================== */}
           {isChatOpen && (
-            <div className="fixed bottom-24 right-3.5 md:bottom-22 md:right-6 z-50 w-[calc(100vw-1.75rem)] sm:w-[390px] h-[520px] max-h-[82vh] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden animate-fadeIn">
+            <div className="fixed bottom-24 right-3.5 md:bottom-22 md:right-6 z-50 w-[calc(100vw-1.75rem)] sm:w-[390px] h-[530px] max-h-[82vh] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden animate-fadeIn">
               
               {/* Chat Header */}
               <div className="bg-gradient-to-r from-brand-900 to-brand-700 dark:from-slate-950 dark:to-brand-900 p-4 text-white flex items-center justify-between shadow-xs">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-white/10 backdrop-blur-xs flex items-center justify-center text-lg border border-white/20">
-                    🩺
+                  <div className="relative w-10 h-10 rounded-2xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-xl border border-white/25 shadow-xs">
+                    👩‍⚕️
+                    <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-brand-900 rounded-full"></span>
                   </div>
                   <div>
                     <h3 className="font-bold text-sm leading-tight flex items-center gap-1.5">
-                      <span>DIMMA Health AI</span>
-                      <span className="text-[10px] font-semibold bg-emerald-500 text-white px-1.5 py-0.2 rounded-full">Online</span>
+                      <span>Sister Ada</span>
+                      <span className="text-[10px] font-semibold bg-emerald-500/90 text-white px-1.5 py-0.2 rounded-full">Online</span>
                     </h3>
-                    <p className="text-[11px] text-brand-200 dark:text-slate-300">Hospital &amp; Clinical Guidance</p>
+                    <p className="text-[11px] text-brand-200 dark:text-slate-300">DIMMA Virtual Care Guide</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={() => setChatMessages([{ id: 'welcome', sender: 'bot', text: 'Chat history cleared. How can I assist you with your health or hospital visit?', time: 'Just now' }])}
+                    onClick={() => setChatMessages([{ id: 'welcome', sender: 'bot', text: 'Hello dear! Chat history refreshed. How can I assist you or your loved ones today? 🌸', time: 'Just now' }])}
                     title="Clear Chat"
                     className="p-1.5 rounded-lg hover:bg-white/10 text-white/80 hover:text-white text-xs"
                   >
