@@ -496,11 +496,64 @@
       }
     ];
 
-    // --- HUMAN-LIKE AI HEALTH & CARE ASSISTANT (Sister Ada - DIMMA Care Guide) ---
-    const generateAiResponse = (userPrompt, onNavigate) => {
-      const q = userPrompt.toLowerCase().trim();
+    // --- SISTER ADA (DIMMA VIRTUAL CARE COORDINATOR & FRIEND) ---
+    // A warm, empathetic, conversational AI that listens, remembers names, and chats naturally like a real human nurse/friend.
+    const extractNameFromPrompt = (text) => {
+      const patterns = [
+        /(?:my name is|i am|i'm|call me|this is|am)\s+([A-Z][a-z]+|[a-z]+)/i,
+        /^(?:hi|hello|hey)[\s,!]+(?:i am|i'm|my name is|am)\s+([A-Z][a-z]+|[a-z]+)/i,
+        /^(?:hi|hello|hey)[\s,]+([A-Z][a-z]+)$/i
+      ];
+      for (const pattern of patterns) {
+        const match = text.match(pattern);
+        if (match && match[1]) {
+          const raw = match[1].trim();
+          const clean = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+          const ignored = ['here', 'there', 'good', 'fine', 'sick', 'pregnant', 'feeling', 'looking', 'trying', 'asking', 'wondering', 'not', 'very', 'just', 'so'];
+          if (!ignored.includes(clean.toLowerCase()) && clean.length > 1) {
+            return clean;
+          }
+        }
+      }
+      return null;
+    };
 
-      // 1. Emergency & Urgent Symptoms Triage (Bleeding, severe pain, fainted, water break, no kick, convulsion)
+    const generateAiResponse = (userPrompt, onNavigate, currentUserName, setUserName) => {
+      const q = userPrompt.toLowerCase().trim();
+      const detectedName = extractNameFromPrompt(userPrompt);
+      const effectiveName = detectedName || currentUserName || '';
+
+      if (detectedName && setUserName && (!currentUserName || currentUserName !== detectedName)) {
+        setUserName(detectedName);
+        try { localStorage.setItem('dimma_chat_username', detectedName); } catch (e) {}
+      }
+
+      const nameGreet = effectiveName ? `, ${effectiveName}` : '';
+      const nameTag = effectiveName ? ` ${effectiveName}` : '';
+
+      // 1. Direct Name Introduction (e.g. "Hi! My name is Peter", "I am Peter", "Call me Mary")
+      if (detectedName && (
+        q.includes('my name is') || q.includes("i'm ") || q.includes('i am ') || q.includes('call me ') || q.includes('this is ') ||
+        q === `hi ${detectedName.toLowerCase()}` || q === `hello ${detectedName.toLowerCase()}`
+      )) {
+        // If they also mentioned a health complaint in the same sentence
+        const hasComplaint = q.includes('sick') || q.includes('fever') || q.includes('pain') || q.includes('headache') || q.includes('pregnant');
+        if (hasComplaint) {
+          return {
+            type: 'friendly',
+            text: `Hello ${detectedName}! It is so wonderful to meet you, my friend! 😊🌸\n\nWelcome to **DIMMA Hospital & Maternity**. I hear that you're experiencing some discomfort, and I want to make sure you get the best care right away.\n\nCould you tell me a little more about how you're feeling right now? Is it fever, headache, body pain, or something else? I'm right here with you!`,
+            action: { label: '📅 Book Consultation', onClick: () => onNavigate('appointment') }
+          };
+        }
+
+        return {
+          type: 'friendly',
+          text: `Hello ${detectedName}! It is so wonderful to meet you, my friend! 😊🌸\n\nA very warm welcome to **DIMMA Hospital & Maternity** (*"God's Channel in Saving Lives"*).\n\nHow are you doing today${nameGreet}? I'm **Sister Ada**, your virtual care coordinator. Tell me, how can I assist or help you today? Are you looking for health advice, information about our maternity care, or would you like to schedule a visit with our doctors?`,
+          action: { label: '📅 Book a Doctor\'s Visit', onClick: () => onNavigate('appointment') }
+        };
+      }
+
+      // 2. Emergency & Urgent Symptoms Triage (Bleeding, severe pain, fainted, water break, no kick, convulsion)
       if (
         q.includes('bleeding') || q.includes('blood') || q.includes('convulsion') || 
         q.includes('fainted') || q.includes('unconscious') || q.includes('water break') || 
@@ -510,62 +563,111 @@
       ) {
         return {
           type: 'emergency',
-          text: `Oh dear, please stay as calm as you can, but we need to act right away! 🚨\n\nBecause you mentioned bleeding, severe pain, or urgent symptoms, you shouldn't wait or try managing this at home. Our medical officers and on-duty midwives are ready to receive you immediately.\n\n📍 **Where to go**: 11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu.\n📞 **Call our 24/7 Emergency Desk**: 08064689371 so our team can prepare for your arrival before you get to the gate.`,
+          text: `Oh dear${nameGreet}, please stay as calm as you can, but we need to act right away! 🚨\n\nBecause you mentioned bleeding, severe pain, or urgent symptoms, please don't wait or try managing this at home. Our medical officers and on-duty midwives are ready to receive you immediately.\n\n📍 **Where to go**: 11 Wokemba Street, Federal Housing, Trans-Ekulu, Enugu.\n📞 **Call our 24/7 Emergency Line**: 08064689371 so our team can prepare for your arrival before you get to the gate.`,
           action: { label: '📞 Call Emergency Line Now: 08064689371', href: 'tel:+2348064689371' }
         };
       }
 
-      // 2. Warm Greetings ("Hi", "Hello", "Good morning", "Good afternoon", "How are you", "Hey")
+      // 3. Asking About Sister Ada / AI Identity / Small Talk ("Who are you", "What is your name", "Tell me about yourself")
       if (
-        q === 'hi' || q === 'hello' || q.startsWith('hello') || q.startsWith('hi ') || 
-        q.includes('good morning') || q.includes('good afternoon') || q.includes('good evening') || 
-        q.includes('how are you') || q.includes('how far') || q.includes('kedu')
+        q.includes('who are you') || q.includes('what is your name') || q.includes('your name') || 
+        q.includes('tell me about yourself') || q.includes('who made you') || q.includes('are you human') || q.includes('are you real')
       ) {
         return {
           type: 'friendly',
-          text: `Hello there! It's so lovely to connect with you today. 😊🌸\n\nI am Sister Ada, your virtual care coordinator here at **DIMMA Hospital & Maternity** (*"God's Channel in Saving Lives"*).\n\nHow are you and your family feeling today? Whether you need advice on a symptom you're experiencing, want to register for antenatal care, or would like to book a consultation with our doctors, I'm right here to help you step-by-step.`,
-          action: { label: '📅 Book a Doctor\'s Visit', onClick: () => onNavigate('appointment') }
-        };
-      }
-
-      // 3. Gratitude & Blessings ("Thank you", "Thanks", "God bless you", "Appreciate", "Alright", "Okay")
-      if (
-        q.includes('thank') || q.includes('bless') || q.includes('dal') || q.includes('appreciate') || 
-        q === 'ok' || q === 'okay' || q === 'alright' || q.includes('bye') || q.includes('good night')
-      ) {
-        return {
-          type: 'friendly',
-          text: `You are so very welcome, dear! 💙 It is truly our joy to serve you.\n\nMay God keep you and your loved ones in vibrant health and peace. Remember, our hospital doors at 11 Wokemba Street and our emergency line (08064689371) are open 24/7 whenever you need a listening ear or medical care.\n\nHave a blessed and restful day ahead! 🌿`,
+          text: `I'm **Sister Ada**, your virtual care coordinator and friend here at **DIMMA Hospital & Maternity** in Trans-Ekulu, Enugu! 👩‍⚕️🌸\n\nThink of me as your personal sister and nurse guide in healthcare. I'm here to chat warmly with you, listen to how you're feeling, give you gentle health and maternity advice, or help you book an appointment with our experienced doctors.\n\nHow has your day been going${nameGreet}? What would you like to chat about today?`,
           action: { label: 'Explore Our Services', onClick: () => onNavigate('services') }
         };
       }
 
-      // 4. Pregnancy, Maternity & Antenatal (ANC)
+      // 4. How are you / Checking in on Ada ("How are you", "How are you doing", "How far", "Hope you're good", "Are you okay")
       if (
-        q.includes('maternity') || q.includes('antenatal') || q.includes('anc') || 
-        q.includes('pregnant') || q.includes('pregnancy') || q.includes('baby delivery') || 
-        q.includes('labor') || q.includes('postnatal') || q.includes('pnc') || q.includes('trimester')
+        q.includes('how are you') || q.includes('how are you doing') || q.includes('how far') || 
+        q.includes('how is your day') || q.includes('hope you are fine') || q.includes('hope you are good') || q.includes('kedu')
       ) {
         return {
           type: 'friendly',
-          text: `A hearty congratulations to you on this beautiful journey! 🤰✨\n\nCaring for expectant mothers and welcoming healthy babies is truly the heartbeat of DIMMA Hospital & Maternity. Our midwives and obstetricians are so gentle, attentive, and vigilant:\n\n• **Early Antenatal Registration**: We run foundational blood tests (PCV, Genotype, Rhesus), vital monitoring, and personalized nutritional guidance.\n• **24/7 Delivery Suites**: Round-the-clock skilled delivery support with comfortable, hygienic recovery wards.\n• **Postnatal & Newborn Care**: Healing checks for mother, exclusive breastfeeding support, and newborn growth tracking.\n\nWould you like to schedule your first antenatal consultation with us?`,
+          text: `I'm doing wonderfully well, thank you so much for asking${nameGreet}! 😊 It always brings a smile to my face when someone checks in on me.\n\nHow is your own day going so far? Are you feeling strong and healthy, or is there something on your mind that I can help you with today?`,
+          action: { label: '📅 Book a Doctor\'s Visit', onClick: () => onNavigate('appointment') }
+        };
+      }
+
+      // 5. Positive State / User saying they are fine ("I am fine", "I'm good", "Doing great", "All good", "I am okay")
+      if (
+        q === 'i am fine' || q === "i'm fine" || q === 'fine' || q.includes('doing good') || 
+        q.includes('doing well') || q.includes('i am okay') || q.includes("i'm okay") || 
+        q.includes('all good') || q.includes('doing great') || q === 'good'
+      ) {
+        return {
+          type: 'friendly',
+          text: `I'm so glad to hear that${nameGreet}! 😊 Keeping in good health and high spirits is such a true blessing.\n\nWhat can I do for you today${nameTag}? Are you checking in for some everyday health tips, looking into our 24/7 maternity services, or would you like to schedule a routine checkup with one of our doctors?`,
+          action: { label: 'Explore Services & Clinics', onClick: () => onNavigate('services') }
+        };
+      }
+
+      // 6. Negative State / User feeling sick or sad ("I am not fine", "I'm sick", "I feel bad", "I am having pain", "Feeling unwell")
+      if (
+        q.includes('not fine') || q.includes('not feeling well') || q.includes('sick') || 
+        q.includes('feel bad') || q.includes('unwell') || q.includes('i feel terrible') || 
+        q.includes('having pain') || q.includes('i am hurting') || q.includes('sad') || q.includes('stressed')
+      ) {
+        return {
+          type: 'friendly',
+          text: `Oh no${nameGreet}, I am so sorry you are feeling this way! 🥺 Please know you're in caring hands, and we want to help you feel better as soon as possible.\n\nCould you tell me a little more about what's bothering you? For example, do you have a fever, headache, stomach ache, cough, or body pain? Tell me what you're feeling, and I'll guide you on the best next step.`,
+          action: { label: '📅 Book Fast Doctor\'s Consultation', onClick: () => onNavigate('appointment') }
+        };
+      }
+
+      // 7. General Friendly Greetings ("Hi", "Hello", "Good morning", "Good afternoon", "Hey")
+      if (
+        q === 'hi' || q === 'hello' || q === 'hey' || q.startsWith('hello') || q.startsWith('hi ') || 
+        q.includes('good morning') || q.includes('good afternoon') || q.includes('good evening')
+      ) {
+        return {
+          type: 'friendly',
+          text: `Hello and a very warm welcome${nameGreet}! 😊🌸\n\nIt is so nice to connect with you today! I'm **Sister Ada** from **DIMMA Hospital & Maternity** in Trans-Ekulu, Enugu.\n\nHow are you and your family doing today? Tell me, how can I assist you today — whether it's health guidance, maternity support, or booking a consultation with our medical team, I'm right here for you!`,
+          action: { label: '📅 Book a Doctor\'s Visit', onClick: () => onNavigate('appointment') }
+        };
+      }
+
+      // 8. Gratitude, Blessings & Politeness ("Thank you", "Thanks", "God bless you", "Appreciate", "Alright", "Okay")
+      if (
+        q.includes('thank') || q.includes('bless') || q.includes('dal') || q.includes('appreciate') || 
+        q === 'ok' || q === 'okay' || q === 'alright' || q.includes('bye') || q.includes('good night') || q.includes('see you')
+      ) {
+        return {
+          type: 'friendly',
+          text: `You are so very welcome${nameGreet}! 💙 It is truly my joy and privilege to be here for you.\n\nMay God keep you and your loved ones in sound health, joy, and peace. Remember, our hospital doors at 11 Wokemba Street and our 24/7 phone line (08064689371) are always open whenever you need medical care or a listening ear.\n\nHave a blessed, wonderful day ahead! 🌿`,
+          action: { label: 'Explore Our Services', onClick: () => onNavigate('services') }
+        };
+      }
+
+      // 9. Pregnancy, Maternity & Antenatal (ANC)
+      if (
+        q.includes('maternity') || q.includes('antenatal') || q.includes('anc') || 
+        q.includes('pregnant') || q.includes('pregnancy') || q.includes('baby delivery') || 
+        q.includes('labor') || q.includes('labour') || q.includes('postnatal') || q.includes('pnc') || q.includes('trimester')
+      ) {
+        return {
+          type: 'friendly',
+          text: `A hearty congratulations to you on this beautiful journey${nameGreet}! 🤰✨\n\nCaring for expectant mothers and welcoming healthy babies is the true heartbeat of DIMMA Hospital & Maternity. Here is how our team supports you every step:\n\n• **Antenatal Care (ANC)**: Baseline lab tests (PCV, Blood Group, Genotype, Rhesus), vital checks, ultrasound scans, and personalized nutrition.\n• **24/7 Delivery Suites**: Skilled, compassionate midwives and consultant obstetricians ready day and night in clean, comfortable birthing suites.\n• **Postnatal & Newborn Care**: Immunization, lactation coaching, and maternal recovery monitoring.\n\nWould you like me to help you book your first antenatal consultation?`,
           action: { label: '🤰 Book Antenatal Consultation', onClick: () => onNavigate('appointment', { service: 'Antenatal Care (ANC)' }) }
         };
       }
 
-      // 5. Booking an Appointment or Seeing a Doctor
+      // 10. Booking an Appointment or Seeing a Doctor
       if (
         q.includes('book') || q.includes('appointment') || q.includes('schedule') || 
         q.includes('see a doctor') || q.includes('consult') || q.includes('register')
       ) {
         return {
           type: 'friendly',
-          text: `I would be delighted to help you get that scheduled! 🩺\n\nBooking a consultation ensures our doctors can give you their undivided, unhurried attention. You can choose any day that fits your schedule, and whether you prefer morning, afternoon, or evening clinic slots.\n\nOnce you submit, our front desk team will give you a friendly confirmation call. Click below to choose your preferred time:`,
+          text: `I would be delighted to help you get that scheduled${nameGreet}! 🩺\n\nBooking ahead ensures our doctor gives you their full, unhurried attention. You can choose any date that suits your convenience, and pick a morning, afternoon, or evening clinic slot.\n\nOnce you submit, our friendly front desk team will call you to confirm. Click below to open the booking form:`,
           action: { label: '📅 Open Appointment Booking Form', onClick: () => onNavigate('appointment') }
         };
       }
 
-      // 6. Hospital Location & Driving Directions
+      // 11. Hospital Location & Driving Directions in Enugu
       if (
         q.includes('where') || q.includes('location') || q.includes('address') || 
         q.includes('directions') || q.includes('find you') || q.includes('trans-ekulu') || 
@@ -573,26 +675,27 @@
       ) {
         return {
           type: 'friendly',
-          text: `We are right here in Trans-Ekulu, Enugu! 📍\n\n• **Our Address**: 11 Wokemba Street, Federal Housing Estate, Trans-Ekulu, Enugu, Nigeria.\n• **Easy Landmarks**: It's well-connected and easy to find within the Federal Housing area.\n\nIf you or your cab driver are on the road and need a quick voice guide, feel free to ring our front desk directly at **08064689371** and we'll direct you straight to our gate!`,
-          action: { label: '📍 View Map & Contact Page', onClick: () => onNavigate('contact') }
+          text: `We are located right in Trans-Ekulu, Enugu${nameGreet}! 📍\n\n• **Address**: 11 Wokemba Street, Federal Housing Estate, Trans-Ekulu, Enugu, Nigeria.\n• **Landmarks**: Easy to access within the Federal Housing neighborhood.\n\nIf you or your driver need directions while on the road, you can call our front desk directly at **08064689371** and we will guide you straight to the gate!`,
+          action: { label: '📍 View Map & Contact Details', onClick: () => onNavigate('contact') }
         };
       }
 
-      // 7. Common Illness Symptoms (Fever, Headache, Malaria, Stomach pain, Cough, Vomiting)
+      // 12. Common Illness Symptoms (Fever, Headache, Malaria, Stomach pain, Cough, Vomiting, Diarrhea, Body aches)
       if (
         q.includes('fever') || q.includes('malaria') || q.includes('typhoid') || 
         q.includes('headache') || q.includes('vomit') || q.includes('cough') || 
         q.includes('stomach') || q.includes('body pain') || q.includes('weakness') ||
-        q.includes('dizzy') || q.includes('dizziness') || q.includes('sick') || q.includes('cold')
+        q.includes('dizzy') || q.includes('dizziness') || q.includes('cold') || q.includes('throat') ||
+        q.includes('diarrhea') || q.includes('stooling') || q.includes('temperature')
       ) {
         return {
           type: 'health',
-          text: `Oh, I'm so sorry you're feeling unwell! 🥺 Please take things easy right now.\n\nSymptoms like fever, persistent headache, or body weakness are very common, often pointing to malaria, typhoid, or a viral infection. Here is what I recommend for right now:\n\n1. **Hydration**: Drink plenty of clean water or oral rehydration fluids to avoid dehydration.\n2. **Rest**: Avoid strenuous chores or heavy work.\n3. **Do not self-medicate blindly**: Let our doctor take a look and run a quick 15-minute diagnostic test in our laboratory so we prescribe the exact treatment that will bring you relief.\n\nWould you like to come in for a consultation today?`,
+          text: `Oh, I'm so sorry you're dealing with that${nameGreet}! 🥺 Please take things very easy right now.\n\nSymptoms like fever, headache, weakness, or stomach upset are very common and often relate to malaria, typhoid, or a viral bug. Here are a few caring tips for right now:\n\n1. **Hydrate**: Sip plenty of clean water, coconut water, or oral rehydration fluids.\n2. **Rest**: Lie down in a cool, well-ventilated room.\n3. **Avoid blind self-medication**: It's much safer to have our doctor examine you and run a quick 15-minute diagnostic test in our laboratory so you get the exact medication that will relieve you.\n\nWould you like to come in for a consultation today?`,
           action: { label: '📅 Book Quick Doctor\'s Consultation', onClick: () => onNavigate('appointment') }
         };
       }
 
-      // 8. Newborn & Pediatric Care
+      // 13. Newborn & Pediatric Care
       if (
         q.includes('newborn') || q.includes('infant') || q.includes('cord') || 
         q.includes('breastfeed') || q.includes('immuniz') || q.includes('vaccin') || 
@@ -600,52 +703,52 @@
       ) {
         return {
           type: 'health',
-          text: `Caring for little ones is so special, but it can also bring questions! 👶🍼\n\nHere are some essential tips our pediatric and midwifery team always shares with parents:\n\n• **Umbilical Cord Care**: Keep the cord stump clean and dry at all times. Never apply charcoal, ash, or unprescribed pastes.\n• **Feeding**: Nurse on demand—newborns typically feed 8 to 12 times a day in the first weeks.\n• **Immunization**: Make sure baby's vaccinations are kept up to date according to national clinical schedules.\n\nIf baby develops a high fever, cough, or refuses feeding, please bring them in for prompt pediatric review!`,
-          action: { label: '👶 Explore Child & Family Healthcare', onClick: () => onNavigate('services') }
+          text: `Caring for little ones is such a precious gift, but it can bring questions${nameGreet}! 👶🍼\n\nHere are some golden tips our pediatric and midwifery team always shares with parents:\n\n• **Umbilical Cord Care**: Keep the cord stump clean and dry. Never apply charcoal, cow dung, or unprescribed concoctions.\n• **Breastfeeding**: Nurse on demand—newborns typically feed 8 to 12 times a day.\n• **Immunization**: Keep baby's routine vaccinations on schedule for maximum protection.\n\nIf your baby ever develops a high fever, persistent vomiting, or refuses to feed, please bring them straight in for an evaluation!`,
+          action: { label: '👶 Explore Child Healthcare', onClick: () => onNavigate('services') }
         };
       }
 
-      // 9. Visiting Hours & Rules
+      // 14. Visiting Hours & Schedule
       if (
         q.includes('visiting') || q.includes('visit') || q.includes('hours') || 
         q.includes('time') || q.includes('open') || q.includes('close') || q.includes('sunday')
       ) {
         return {
           type: 'friendly',
-          text: `Here is our visiting schedule! 🕒\n\n• **Morning Visiting Slot**: 11:00 AM – 1:00 PM\n• **Evening Visiting Slot**: 4:00 PM – 6:00 PM\n• **Emergency & Maternity Admissions**: Open **24 Hours / 7 Days a week**, including Sundays and public holidays.\n\nWe structure visiting hours this way so our recuperating patients and new mothers get plenty of peaceful rest to heal. Are you planning to visit someone at the ward today?`,
+          text: `Here is our visiting schedule${nameGreet}! 🕒\n\n• **Morning Visiting Slot**: 11:00 AM – 1:00 PM\n• **Evening Visiting Slot**: 4:00 PM – 6:00 PM\n• **24/7 Emergency & Maternity**: Open **all day and night, 7 days a week**, including Sundays and public holidays.\n\nWe keep these visiting hours so our recovering patients and new mothers get peaceful, restorative rest. Are you planning to visit a patient at the ward today?`,
           action: { label: 'View Patient Visit Guidelines', onClick: () => onNavigate('patient-info') }
         };
       }
 
-      // 10. Billing, Pricing, HMO & Payment Methods
+      // 15. Billing, Pricing, HMO & Payment Methods
       if (
         q.includes('payment') || q.includes('price') || q.includes('cost') || 
         q.includes('bill') || q.includes('hmo') || q.includes('insurance') || 
-        q.includes('card') || q.includes('pos') || q.includes('transfer') || q.includes('money')
+        q.includes('card') || q.includes('pos') || q.includes('transfer') || q.includes('money') || q.includes('naira')
       ) {
         return {
           type: 'friendly',
-          text: `We know that clear, transparent billing gives you peace of mind! 💳\n\n• **Payment Methods Accepted**: You can pay easily using any Nigerian debit card (MasterCard, Visa, Verve) via our POS, through direct bank transfer at our cashier desk, or in cash.\n• **Affordable & Fair Care**: We strive to make quality maternal and general healthcare accessible for Trans-Ekulu and Enugu families.\n• **Pricing Inquiries**: For specific delivery packages or procedure estimates, our front desk team is happy to assist you over the phone at **08064689371**.`,
+          text: `We believe in transparent, honest, and affordable healthcare for all families${nameGreet}! 💳\n\n• **Payment Methods**: We accept POS card payments (MasterCard, Visa, Verve), direct Nigerian bank transfers, and cash at our cashier desk.\n• **Fair & Accessible Pricing**: We keep our maternity packages, consultations, and lab diagnostics affordable for our Trans-Ekulu and Enugu community.\n• **Detailed Pricing Inquiries**: For specific procedure or delivery package estimates, our front desk team is happy to guide you over the phone at **08064689371**.`,
           action: { label: 'View Payment Information', onClick: () => onNavigate('patient-info') }
         };
       }
 
-      // 11. Medical Team / Doctors & Leadership
+      // 16. Medical Team / Doctors & Leadership
       if (
         q.includes('doctor') || q.includes('specialist') || q.includes('gynecologist') || 
         q.includes('pediatrician') || q.includes('midwife') || q.includes('nurse') || q.includes('team')
       ) {
         return {
           type: 'friendly',
-          text: `Our clinical team is dedicated to providing warm, attentive, and highly professional care! 👨‍⚕️👩‍⚕️\n\nWe have experienced Medical Directors, Consultant Obstetricians & Gynecologists, Physicians, Pediatricians, and Certified Midwives holding daily outpatient clinics and supervising 24/7 maternity care.\n\nWould you like to see our medical team and clinical departments?`,
+          text: `Our clinical team is devoted to giving you warm, dignified, and expert healthcare${nameGreet}! 👨‍⚕️👩‍⚕️\n\nWe have experienced Medical Directors, Consultant Obstetricians & Gynecologists, Physicians, Pediatricians, and Certified Midwives on duty round the clock.\n\nWould you like to learn more about our medical team and clinical departments?`,
           action: { label: 'View Medical Team & Departments', onClick: () => onNavigate('doctors') }
         };
       }
 
-      // 12. Default Caring Fallback
+      // 17. Default Conversational Fallback
       return {
         type: 'friendly',
-        text: `Thank you for sharing that with me! 🌸\n\nAs your DIMMA care guide, I'm here to ensure you get the exact help you need. DIMMA Hospital & Maternity (*"GOD'S CHANNEL IN SAVING LIVES"*) is located at 11 Wokemba Street, Trans-Ekulu, Enugu.\n\nYou can ask me about:\n• Maternity & Antenatal registration 🤰\n• Advice on any symptoms you're feeling 💊\n• Booking an in-person doctor's appointment 📅\n• Visiting hours, laboratory tests, or emergency help 📞\n\nHow else can I assist you right now, dear?`,
+        text: `Thank you for sharing that with me${nameGreet}! 🌸\n\nAs your friend and care coordinator at **DIMMA Hospital & Maternity** (*"GOD'S CHANNEL IN SAVING LIVES"*, 11 Wokemba Street, Trans-Ekulu, Enugu), I'm right here to guide you.\n\nYou can ask me about:\n• Maternity & Antenatal (ANC) registration 🤰\n• Advice on any symptoms you or a loved one is experiencing 💊\n• Booking an in-person doctor's appointment 📅\n• Visiting hours, lab tests, or our 24/7 emergency desk (08064689371) 📞\n\nHow else can I assist you right now, my friend?`,
         action: { label: '📅 Book an Appointment', onClick: () => onNavigate('appointment') }
       };
     };
@@ -663,6 +766,9 @@
       const [selectedArticle, setSelectedArticle] = useState(null);
 
       // AI Chatbot State with Human-like Persona
+      const [userName, setUserName] = useState(() => {
+        try { return localStorage.getItem('dimma_chat_username') || ''; } catch (e) { return ''; }
+      });
       const [isChatOpen, setIsChatOpen] = useState(false);
       const [chatInput, setChatInput] = useState('');
       const [chatMessages, setChatMessages] = useState([
@@ -805,7 +911,7 @@
         setIsBotTyping(true);
 
         setTimeout(() => {
-          const botResult = generateAiResponse(messageText, navigate);
+          const botResult = generateAiResponse(messageText, navigate, userName, setUserName);
           const botMsg = {
             id: `bot-${Date.now()}`,
             sender: 'bot',
@@ -2040,7 +2146,7 @@
                   type="text"
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Describe symptoms or ask hospital question..."
+                  placeholder={userName ? `Chat with Sister Ada, ${userName}...` : "Tell me your name or describe symptoms..."}
                   className="flex-grow text-xs p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
                 <button
